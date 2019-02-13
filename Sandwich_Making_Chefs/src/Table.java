@@ -1,8 +1,15 @@
 public class Table
 {
     public static void main(String[] args) {
-        new Thread(new ChefOne()).start();
-        new ChefTwo().start();
+
+        Thread Agent        = new Thread (new Agent());
+
+
+        Agent.start();
+//        ChefOne.start();
+//        ChefTwo.start();
+//        ChefThree.start();
+
 
         //TODO Algorithm
 
