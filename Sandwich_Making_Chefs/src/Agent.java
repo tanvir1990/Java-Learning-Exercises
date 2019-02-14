@@ -7,60 +7,70 @@ public class Agent implements Runnable
     String ingOne;
     String ingTwo;
 
-    Thread ChefOne      = new Thread(new ChefOne());
+
     Thread ChefTwo      = new Thread(new ChefTwo());
     Thread ChefThree    = new Thread(new ChefThree());
+
+    //0 Bread
+    //1 PB
+    //2 Jam
+
+
+
+
     public void run(){
      //TODO  Agent puts two ingredients on the table
 
 
         System.out.println("Agent Running" );
 
-        for ( int i = 0; i < 20; i ++){
-            generateIngredientOne();
-            ingredientOne = getIngredientOne();
+            //generateIngredientOne();
+           // generateIngredientTwo();
 
-            if      (ingredientOne == 0) {ingOne = "Bread";}
-            else if (ingredientOne == 1) {ingOne = "PB";}
-            else if (ingredientOne == 2) {ingOne = "Jam";}
+        ingredientTwo = 2;
+        ingredientOne = 1;
+            //System.out.println("one " + ingredientOne + " Two " + ingredientTwo);
 
-            while ( ingredientTwo == ingredientOne){
-                generateIngredientTwo();
-                ingredientTwo = getIngredientTwo();
+        while (!sandwichMade) {
+            System.out.println("Agent put the ingredients on the table. \n");
+            putIngredientsOnTheTable();
+            try {
+                wait();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
-            if      (ingredientTwo == 0) {ingTwo = "Bread";}
-            else if (ingredientTwo == 1) {ingTwo = "PB";}
-            else if (ingredientTwo == 2) {ingTwo = "Jam";}
-
-
-
-            if ( ingOne.equals("Jam") & ingTwo.equals("PB")){
-
-                ChefOne.start();
-                try {
-                    ChefOne.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }       //because ChefOne has Bread
-
-            else if ( ingOne.equals("Bread") & ingTwo.equals("Jam")){
-                    ChefTwo.start();
-            }       //because ChefTwo has PB
-
-            else if ( ingOne.equals("Bread") & ingTwo.equals("PB")){
-                ChefThree.start();
-                }       //because ChefOne has Jam
-
-            System.out.println("Ingredient one is " + ingOne + " Ingredient Two is " + ingTwo + " and");
+            System.out.println("Agent waits for the chef to make Sandwich. \n");
         }
-
-        System.out.println("Agent Running Two" );
-
-
+        sandwichMade = true;
+        notify();
     }
 
+    public void setSandwichMade(boolean sandwichMade) {
+        this.sandwichMade = sandwichMade;
+    }
+
+    boolean sandwichMade = false;
+
+    public boolean isSandwichMade() {
+        return sandwichMade;
+    }
+
+    private synchronized void putIngredientsOnTheTable() {
+
+//        try {
+//            //Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        if (ingredientOne == 1 & ingredientTwo == 2)    {
+            //TODO send this info to Chef
+            //ChefOne chefOne =new ChefOne(ingredientOne, ingredientTwo);
+            Thread ChefOne      = new Thread(new ChefOne(ingredientOne, ingredientTwo));
+            ChefOne.start();
+        }
+
+    }
 
 
     public void generateIngredientOne(){                         //Creating Two Random numbers
@@ -70,7 +80,10 @@ public class Agent implements Runnable
 
     public void generateIngredientTwo(){
         Random r2 = new Random();
-        ingredientTwo = r2.nextInt(3);
+
+        while (ingredientOne == ingredientTwo){
+            ingredientTwo = r2.nextInt(3);
+        }
     }
 
     public int getIngredientTwo() {
